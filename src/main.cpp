@@ -158,7 +158,7 @@ int main(int argc, char** argv) {
 
     stbi_set_flip_vertically_on_load(true);
     int imgWidth, imgHeight, nrChannels;
-    const char* imagePath = "res\\miku.jpg";
+    const char* imagePath = "res\\imgs\\miku.jpg";
     unsigned char* data = stbi_load(imagePath, &imgWidth, &imgHeight, &nrChannels, 0);
     if (data) {
         GLenum format;
@@ -177,7 +177,7 @@ int main(int argc, char** argv) {
     }
     stbi_image_free(data);
 
-    // MAIN LOOP
+    // -~< MAIN LOOP >~-
 
 	while (!glfwWindowShouldClose(window)) {
 		ProcessInput(window);
