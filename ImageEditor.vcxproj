@@ -144,8 +144,8 @@
     <ClCompile Include="src\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\frag.glsl" />
-    <None Include="res\shaders\vert.glsl" />
+    <None Include="res\shaders\shader.fs" />
+    <None Include="res\shaders\shader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Shader.h" />

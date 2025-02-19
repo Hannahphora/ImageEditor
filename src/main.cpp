@@ -8,6 +8,8 @@
 #define GLFW_INCLUDE_NONE
 #include "../ext/GLFW/glfw3.h"
 
+#include "Shader.h"
+
 #if _DEBUG
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
@@ -54,72 +56,11 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
-    // vert shader
-    const char* vertexShaderSource = R"(
-    #version 460 core
-    layout (location = 0) in vec3 aPos;
-    layout (location = 1) in vec2 aTexCoord;
-    
-    out vec2 TexCoord;
-    
-    void main()
-    {
-        gl_Position = vec4(aPos, 1.0);
-        TexCoord = aTexCoord;
-    }
-    )";
-
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cerr << "Error: Vertex shader compilation failed\n" << infoLog << "\n";
-    }
-
-    // frag shader
-    const char* fragmentShaderSource = R"(
-    #version 460 core
-    out vec4 FragColor;
-    
-    in vec2 TexCoord;
-    uniform sampler2D ourTexture;
-    
-    void main()
-    {
-        FragColor = texture(ourTexture, TexCoord);
-    }
-    )";
-
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cerr << "Error: Fragment shader compilation failed\n" << infoLog << "\n";
-    }
-
-    // link shaders
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cerr << "Error: Shader program linking failed\n" << infoLog << '\n';
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    Shader shader("res\\shaders\\shader.vs", "res\\shaders\\shader.fs");
 
     // vert data for fullscreen quad
     float vertices[] = {
         // positions           // texture coords
-
          -1.0f,  1.0f, 0.0f,   0.0f, 1.0f, // top-left
          -1.0f, -1.0f, 0.0f,   0.0f, 0.0f, // bottom-left
           1.0f, -1.0f, 0.0f,   1.0f, 0.0f, // bottom-right
@@ -172,9 +113,7 @@ int main(int argc, char** argv) {
         glTexImage2D(GL_TEXTURE_2D, 0, format, imgWidth, imgHeight, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
-    else {
-        std::cerr << "Error: Failed to load texture\n";
-    }
+    else std::cerr << "Error: Failed to load texture\n";
     stbi_image_free(data);
 
     // -~< MAIN LOOP >~-
@@ -185,7 +124,7 @@ int main(int argc, char** argv) {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
+        shader.use();
         glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -197,7 +136,6 @@ int main(int argc, char** argv) {
     // cleanup
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgram);
 	glfwTerminate();
 	return 0;
 }

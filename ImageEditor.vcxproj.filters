@@ -26,10 +26,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\frag.glsl">
+    <None Include="res\shaders\shader.fs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="res\shaders\vert.glsl">
+    <None Include="res\shaders\shader.vs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
